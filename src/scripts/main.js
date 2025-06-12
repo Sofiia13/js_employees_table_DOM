@@ -5,11 +5,13 @@ const body = document.querySelector('table tbody');
 
 let employeesArr = [];
 
+const tr = body.querySelectorAll('tr');
+
+// Sorting functionality
 function extractEmployees() {
-  const tr = body.querySelectorAll('tr');
   employeesArr = [];
 
-  tr.forEach(row => {
+  tr.forEach((row) => {
     const cells = row.querySelectorAll('td');
 
     employeesArr.push({
@@ -18,16 +20,18 @@ function extractEmployees() {
       office: cells[2].textContent,
       age: +cells[3].textContent,
       salary: Number(cells[4].textContent.slice(1).replace(/,/g, '')),
-    })
-  })
+    });
+  });
 }
 
 extractEmployees();
 
 function renderTable(data) {
   body.innerHTML = '';
-  data.forEach(emp => {
+
+  data.forEach((emp) => {
     const row = document.createElement('tr');
+
     row.innerHTML = `
       <td>${emp.name}</td>
       <td>${emp.position}</td>
@@ -37,7 +41,7 @@ function renderTable(data) {
     `;
 
     body.appendChild(row);
-  })
+  });
 }
 
 let sortDirection = 1;
@@ -53,9 +57,20 @@ head.querySelectorAll('th').forEach((title, index) => {
       } else {
         return a[key].localeCompare(b[key]) * sortDirection;
       }
-    })
+    });
 
     sortDirection *= -1;
     renderTable(employeesArr);
-  })
-})
+  });
+});
+
+// Select row
+body.addEventListener('click', (e) => {
+  const clickedRow = e.target.closest('tr');
+
+  tr.forEach((row) => {
+    row.classList.remove('active');
+  });
+
+  clickedRow.classList.add('active');
+});
