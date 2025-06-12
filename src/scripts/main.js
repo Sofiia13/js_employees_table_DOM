@@ -112,7 +112,7 @@ const button = document.createElement('button');
 button.textContent = 'Save to table';
 form.appendChild(button);
 
-function addInput(type, nameOfInput, atribute, labelText, options = []) {
+function addInput(type, nameOfInput, atribute, labelText = '', options = []) {
   let input;
 
   if (type === 'select') {
@@ -239,3 +239,39 @@ const pushNotification = (title, description, type) => {
     block.style.display = 'none';
   }, 2000);
 };
+
+// Edit cell
+body.addEventListener('dblclick', (ev) => {
+  const clickedCell = ev.target.closest('td');
+
+  if (!clickedCell) {
+    return;
+  }
+
+  const currentText = clickedCell.textContent;
+
+  const editInput = document.createElement('input');
+
+  editInput.type = 'text';
+  editInput.value = currentText;
+  editInput.style.width = '100%';
+  editInput.classList.add('cell-input');
+
+  clickedCell.textContent = '';
+  clickedCell.appendChild(editInput);
+  editInput.focus();
+
+  const save = () => {
+    clickedCell.textContent = editInput.value.trim() || currentText;
+  };
+
+  editInput.addEventListener('blur', save);
+
+  editInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      editInput.blur();
+    } else if (e.key === 'Escape') {
+      clickedCell.textContent = currentText;
+    }
+  });
+});
