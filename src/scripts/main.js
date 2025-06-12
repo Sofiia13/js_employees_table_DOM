@@ -158,6 +158,27 @@ button.addEventListener('click', (e) => {
 
   const formattedSalary = `$${salary.toLocaleString()}`;
 
+  const errors = [];
+
+  if (naming.length < 4) {
+    errors.push('Name must be more than 4 symbols');
+  }
+
+  if (+age < 18 || +age > 90) {
+    errors.push('Age must be more than 18 or less than 90');
+  }
+
+  if (errors.length > 0) {
+    pushNotification(
+      'Title of Error message',
+      'Message example.\n ' +
+        'Notification should contain title and description.',
+      'error',
+    );
+
+    return;
+  }
+
   const newRow = document.createElement('tr');
 
   [naming, position, office, age, formattedSalary].forEach((val) => {
@@ -170,7 +191,7 @@ button.addEventListener('click', (e) => {
   body.appendChild(newRow);
 
   employeesArr.push({
-    naming,
+    name: naming,
     position,
     office,
     age: +age,
@@ -179,5 +200,42 @@ button.addEventListener('click', (e) => {
   renderTable(employeesArr);
 
   form.reset();
+
+  pushNotification(
+    'Title of Success message',
+    'Message example.\n ' +
+      'Notification should contain title and description.',
+    'success',
+  );
 });
+
 document.body.appendChild(form);
+
+// Add notification
+const pushNotification = (title, description, type) => {
+  const block = document.createElement('div');
+
+  block.classList.add('notification', type);
+  block.setAttribute('data-qa', 'notification');
+
+  // block.style.top = posTop + 'px';
+  // block.style.right = posRight + 'px';
+
+  const titleEl = document.createElement('h2');
+
+  titleEl.classList.add('title');
+  titleEl.textContent = title;
+  block.appendChild(titleEl);
+
+  const descriptionEl = document.createElement('p');
+
+  descriptionEl.classList.add('description');
+  descriptionEl.textContent = description;
+  block.appendChild(descriptionEl);
+
+  document.body.appendChild(block);
+
+  setTimeout(() => {
+    block.style.display = 'none';
+  }, 2000);
+};
