@@ -5,10 +5,10 @@ const body = document.querySelector('table tbody');
 
 let employeesArr = [];
 
-const tr = body.querySelectorAll('tr');
-
 // Sorting functionality
 function extractEmployees() {
+  const tr = body.querySelectorAll('tr');
+
   employeesArr = [];
 
   tr.forEach((row) => {
@@ -37,7 +37,7 @@ function renderTable(data) {
       <td>${emp.position}</td>
       <td>${emp.office}</td>
       <td>${emp.age}</td>
-      <td>$${emp.salary.toLocaleString()}</td>
+      <td>$${emp.salary.toLocaleString('en-US')}</td>
     `;
 
     body.appendChild(row);
@@ -68,9 +68,116 @@ head.querySelectorAll('th').forEach((title, index) => {
 body.addEventListener('click', (e) => {
   const clickedRow = e.target.closest('tr');
 
-  tr.forEach((row) => {
+  body.querySelectorAll('tr').forEach((row) => {
     row.classList.remove('active');
   });
 
   clickedRow.classList.add('active');
 });
+
+// Create form to add new employee
+const form = document.createElement('form');
+
+form.classList.add('new-employee-form');
+
+const inputName = addInput('text', 'name', 'data-qa', 'Name:');
+
+form.appendChild(inputName);
+
+const inputPosition = addInput('text', 'position', 'data-qa', 'Position:');
+
+form.appendChild(inputPosition);
+
+const inputOffice = addInput('select', 'office', 'data-qa', 'Office:', [
+  `Tokyo`,
+  `Singapore`,
+  `London`,
+  `New York`,
+  `Edinburgh`,
+  `San Francisco`,
+]);
+
+form.appendChild(inputOffice);
+
+const inputAge = addInput('number', 'age', 'data-qa', 'Age:');
+
+form.appendChild(inputAge);
+
+const inputSalary = addInput('number', 'salary', 'data-qa', 'Salary:');
+
+form.appendChild(inputSalary);
+
+const button = document.createElement('button');
+
+button.textContent = 'Save to table';
+form.appendChild(button);
+
+function addInput(type, nameOfInput, atribute, labelText, options = []) {
+  let input;
+
+  if (type === 'select') {
+    input = document.createElement('select');
+    input.name = nameOfInput;
+
+    options.forEach((opt) => {
+      const option = document.createElement('option');
+
+      option.value = opt;
+      option.textContent = opt;
+      input.appendChild(option);
+    });
+  } else {
+    input = document.createElement('input');
+    input.type = type;
+    input.name = nameOfInput;
+    input.required = true;
+    input.setAttribute(atribute, nameOfInput);
+  }
+
+  if (labelText) {
+    const label = document.createElement('label');
+
+    label.textContent = labelText;
+    label.appendChild(input);
+
+    return label;
+  }
+
+  return input;
+}
+
+// Add new row to the table
+button.addEventListener('click', (e) => {
+  e.preventDefault();
+
+  const naming = inputName.querySelector('input').value;
+  const position = inputPosition.querySelector('input').value;
+  const office = inputOffice.querySelector('select').value;
+  const age = inputAge.querySelector('input').value;
+  const salary = Number(inputSalary.querySelector('input').value);
+
+  const formattedSalary = `$${salary.toLocaleString()}`;
+
+  const newRow = document.createElement('tr');
+
+  [naming, position, office, age, formattedSalary].forEach((val) => {
+    const td = document.createElement('td');
+
+    td.textContent = val;
+    newRow.appendChild(td);
+  });
+
+  body.appendChild(newRow);
+
+  employeesArr.push({
+    naming,
+    position,
+    office,
+    age: +age,
+    salary,
+  });
+  renderTable(employeesArr);
+
+  form.reset();
+});
+document.body.appendChild(form);
