@@ -165,7 +165,7 @@ button.addEventListener('click', (e) => {
   }
 
   if (+age < 18 || +age > 90) {
-    errors.push('Age must be more than 18 or less than 90');
+    errors.push('Age must be between 18 and 90');
   }
 
   if (errors.length > 0) {
@@ -218,9 +218,6 @@ const pushNotification = (title, description, type) => {
   block.classList.add('notification', type);
   block.setAttribute('data-qa', 'notification');
 
-  // block.style.top = posTop + 'px';
-  // block.style.right = posRight + 'px';
-
   const titleEl = document.createElement('h2');
 
   titleEl.classList.add('title');
@@ -249,6 +246,10 @@ body.addEventListener('dblclick', (ev) => {
   }
 
   const currentText = clickedCell.textContent;
+  const tr = clickedCell.parentElement;
+  const rowIndex = Array.from(body.children).indexOf(tr);
+  const colIndex = Array.from(tr.children).indexOf(clickedCell);
+
 
   const editInput = document.createElement('input');
 
@@ -262,7 +263,18 @@ body.addEventListener('dblclick', (ev) => {
   editInput.focus();
 
   const save = () => {
-    clickedCell.textContent = editInput.value.trim() || currentText;
+    const newValue = editInput.value.trim() || currentText;
+
+    clickedCell.textContent = newValue;
+
+    const keys = ['name', 'position', 'office', 'age', 'salary'];
+    const key = keys[colIndex];
+
+    if (key === 'age' || key === 'salary') {
+      employeesArr[rowIndex][key] = Number(newValue.replace(/[^0-9.-]+/g,"")) || employeesArr[rowIndex][key];
+    } else {
+      employeesArr[rowIndex][key] = newValue;
+    }
   };
 
   editInput.addEventListener('blur', save);
